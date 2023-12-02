@@ -9,14 +9,14 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@/app/ui/button';
 import { useFormState, useFormStatus } from 'react-dom';
-// import { authenticate } from '@/app/lib/actions';
+import { authenticate } from '@/app/lib/actions/user-actions';
 
 export default function LoginForm() {
-  // const [state, dispatch] = useFormState(authenticate, undefined);
+  const [state, dispatch] = useFormState(authenticate, undefined);
 
   return (
     <form
-      // action={dispatch}
+      action={dispatch}
       className='space-y-3'>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
