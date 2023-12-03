@@ -1,11 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { auth } from '@/auth';
+import { getUser, auth } from '@/auth';
 import clsx from 'clsx';
 export default async function Home() {
   const session = await auth();
-  console.log(session?.user);
+  console.log({ session });
+  // let user;
+  // if (session?.user?.email) {
+  //   user = await getUser(session?.user?.email);
+  // }
+  // console.log({ user });
 
   return (
     <main className='flex min-h-screen flex-col items-center justify-between p-24'>
@@ -35,6 +40,14 @@ export default async function Home() {
             </span>
             <ArrowRightIcon className='w-5 md:w-6' />
           </Link>
+          {session && (
+            <Link
+              href={`/auth/delete-account/${session?.user?.email}`}
+              className='bg-grey-500 hover:bg-grey-600 flex items-center gap-5 rounded-lg px-6 py-3 text-sm font-medium text-white transition-colors md:text-base'>
+              <span>Supprimer mon compte</span>
+              <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+            </Link>
+          )}
         </div>
       </div>
 

@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn } from '@/auth';
+import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
 
 import bcrypt from 'bcrypt';
@@ -39,6 +39,23 @@ const CreateUser = UserSchema.omit({ _id: true }).extend({
     .string()
     .min(6, 'Le mot de passe doit comporter au moins 6 caractères.'),
 });
+
+export async function deleteUser(prevState: null, email: string) {
+  // Supprimer l'utilisateur de la base de données
+  const client = await connect();
+
+  const db = client.db('LaReponseDev');
+  const collection = db.collection('users');
+  await collection.deleteOne({ email: email });
+
+  // Fermer la connexion à la base de données
+  client.close();
+
+  // Déconnecter l'utilisateur
+  await signOut({
+    redirectTo: '/',
+  });
+}
 
 export async function createUser(
   prevState: UserState,
