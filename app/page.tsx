@@ -1,8 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { auth } from '@/auth';
+import clsx from 'clsx';
+export default async function Home() {
+  const session = await auth();
+  console.log(session?.user);
 
-export default function Home() {
   return (
     <main className='flex min-h-screen flex-col items-center justify-between p-24'>
       <div className='z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex'>
@@ -10,11 +14,26 @@ export default function Home() {
           Get started by editing&nbsp;
           <code className='font-mono font-bold'>app/page.tsx</code>
         </p>
-        <div className='fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none'>
+        <div className='fixed bottom-0 left-0 flex h-48 w-full items-center flex-col justify-center gap-5 bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none'>
           <Link
-            href='/auth/login'
-            className='flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-600 md:text-base'>
-            <span>Se connecter</span> <ArrowRightIcon className='w-5 md:w-6' />
+            href={clsx({
+              '/auth/login': !session?.user,
+              '/auth/logout': session?.user,
+            })}
+            className={clsx(
+              'flex items-center gap-5  rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-600 md:text-base',
+              {
+                'bg-blue-500 hover:bg-blue-600': !session?.user,
+                'bg-gray-500 hover:bg-grey-600': session?.user,
+              }
+            )}>
+            <span>
+              {clsx({
+                'Se connecter': !session?.user,
+                'Se deconnecter': session?.user,
+              })}
+            </span>
+            <ArrowRightIcon className='w-5 md:w-6' />
           </Link>
         </div>
       </div>

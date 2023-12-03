@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'A Next.js starter with TypeScript, Tailwind CSS, and ESLint',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
