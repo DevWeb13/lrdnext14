@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
-import connect from '@/app/lib/actions/connect-db';
+import connect from '@/app/utils/connect-db';
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
