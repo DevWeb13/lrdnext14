@@ -8,6 +8,7 @@ import { AuthError } from 'next-auth';
 
 import bcrypt from 'bcrypt';
 import connect from '../../utils/connect-db';
+import { ObjectId } from 'mongodb';
 
 export type UserState = {
   errors?: {
@@ -40,21 +41,28 @@ const CreateUser = UserSchema.omit({ _id: true }).extend({
     .min(6, 'Le mot de passe doit comporter au moins 6 caractères.'),
 });
 
-export async function deleteUser(prevState: null, email: string) {
-  // Supprimer l'utilisateur de la base de données
+export async function deleteUser(prevState: null, id: string) {
   const client = await connect();
-
   const db = client.db('LaReponseDev');
   const collection = db.collection('users');
-  await collection.deleteOne({ email: email });
 
-  // Fermer la connexion à la base de données
-  client.close();
+  try {
+    // Convertir la chaîne id en ObjectId
+    const objectId = new ObjectId(id);
+    console.log({ objectId });
+
+    // Supprimer l'utilisateur de la base de données
+    await collection.deleteOne({ _id: objectId });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    // Gérer l'erreur si nécessaire
+  } finally {
+    // Fermer la connexion à la base de données dans tous les cas
+    client.close();
+  }
 
   // Déconnecter l'utilisateur
-  await signOut({
-    redirectTo: '/',
-  });
+  await signOut({ redirectTo: '/' });
 }
 
 export async function createUser(
@@ -91,22 +99,48 @@ export async function createUser(
   const client = await connect();
   const db = client.db('LaReponseDev');
   const collection = db.collection('users');
-  const user = await collection.findOne({ email: email });
-  if (user) {
-    return {
-      errors: { email: ['Cet e-mail est déjà utilisé par un autre compte.'] },
-      message: 'Veuillez vérifier vos saisies.',
-    };
+  const existingUser = await collection.findOne({ email: email });
+  if (existingUser) {
+    // Si l'utilisateur existe et a un mot de passe null (inscrit via Google)
+    if (existingUser.password === null) {
+      // Hacher le nouveau mot de passe
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Mettre à jour l'utilisateur existant avec le nouveau mot de passe
+      await collection.updateOne(
+        { _id: existingUser._id },
+        { $set: { password: hashedPassword } }
+      );
+
+      // Fermer la connexion à la base de données et rediriger
+      client.close();
+      prevState.message = null; // Pas d'erreur, redirection vers login
+      redirect('/auth/login');
+    } else {
+      // Si l'utilisateur existe avec un mot de passe, retourner une erreur
+      return {
+        errors: { email: ['Cet e-mail est déjà utilisé par un autre compte.'] },
+        message: 'Veuillez vérifier vos saisies.',
+      };
+    }
   }
 
   // Hacher le mot de passe
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Générer une image basée sur les initiales du nom
+  const initials = name
+    .split(' ')
+    .map((n) => n[0])
+    .join('');
+  const image = `https://some-image-service.com/${initials}`; // Utilisez un service ou une méthode pour générer l'image
 
   // Créer l'utilisateur
   const newUser = {
     name,
     email,
     password: hashedPassword,
+    image,
   };
 
   // Insérer l'utilisateur dans la base de données
