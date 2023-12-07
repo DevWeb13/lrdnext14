@@ -12,6 +12,7 @@ import { Collection, ObjectId } from 'mongodb';
 import { Resend } from 'resend';
 import { DropboxResetPasswordEmail } from '@/components/email-template';
 import { generateResetPasswordToken } from '@/app/utils/generate-reset-password-token';
+import { renderAsync } from '@react-email/render';
 
 import type {
   BasicUserInfo,
@@ -111,15 +112,19 @@ export async function sendEmailResetPassword(
   const resend = new Resend(process.env.RESEND_API_KEY);
   const resetPasswordToken = await addResetToken(user.email, collection);
 
+  const html = await renderAsync(
+    DropboxResetPasswordEmail({
+      resetPasswordLink: `http://localhost:3000/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
+      userFirstname: user.name,
+    }) as React.ReactElement
+  );
+
   try {
     await resend.emails.send({
       from: 'contact@lareponsedev.com',
       to: user.email,
       subject: 'Réinitialisation du mot de passe',
-      react: DropboxResetPasswordEmail({
-        resetPasswordLink: `http://localhost:3000/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
-        userFirstname: user.name,
-      }),
+      html,
     });
   } catch (error) {
     console.error(error);
