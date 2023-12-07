@@ -269,7 +269,7 @@ export async function createUser(
 
       // Mettre à jour l'utilisateur existant avec le nouveau mot de passe
       await collection.updateOne(
-        { __id: user._id },
+        { _id: user._id },
         { $set: { password: hashedPassword } }
       );
 
