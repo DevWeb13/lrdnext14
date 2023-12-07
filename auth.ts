@@ -4,30 +4,10 @@ import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { z } from 'zod';
 
-// import type { User } from '@/app/lib/definitions';
+import type { BasicUserInfo } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
 import connect from '@/app/utils/connect-db';
-
-export async function getUser(email: string) {
-  try {
-    // Utiliser la fonction connect pour obtenir le client MongoDB
-    const client = await connect();
-
-    // Accéder à la base de données et à la collection 'users'
-    const db = client.db();
-    const users = db.collection('users');
-    console.log('Fetching user from database...' + users.collectionName);
-
-    // Rechercher l'utilisateur par email
-    const user = await users.findOne({ email });
-
-    // Retourner les informations de l'utilisateur (ou null si non trouvé)
-    return user;
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
-}
+import { getBasicUserInfo } from '@/app/lib/actions/user-actions';
 
 export const {
   handlers: { GET, POST },
@@ -52,9 +32,8 @@ export const {
           .safeParse(credentials);
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
-          const user = await getUser(email);
-          console.log('User found: ' + user?._id);
-          if (!user) return null;
+          const user = await getBasicUserInfo(email);
+          if (!user || !user.password) return null;
           const passwordsMatch = await bcrypt.compare(password, user.password);
           if (passwordsMatch) return user;
         }
@@ -90,13 +69,22 @@ export const {
           );
         }
       } else {
-        // Si l'utilisateur se connecte via Google et n'existe pas, créez-le sans mot de passe
+        // Si l'utilisateur se connecte via Google et n'existe pas
         if (account?.provider === 'google') {
           const insertedUser = await users.insertOne({
-            name: user.name,
-            email: user.email,
-            image: profile?.picture,
-            password: null, // Aucun mot de passe pour les utilisateurs Google
+            name: user.name, // Nom fourni par Google
+            email: user.email, // Email fourni par Google
+            image: user.image, // Image fournie par Google
+            role: 'user', // Valeur par défaut
+            status: 'active', // Valeur par défaut
+            // Autres champs avec des valeurs par défaut
+            password: null, // Pas de mot de passe pour les utilisateurs Google
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            emailVerificationToken: null,
+            emailVerificationTokenExpiredAt: null,
+            resetPasswordToken: null,
+            resetPasswordTokenExpiredAt: null,
           });
           mongoUserId = insertedUser.insertedId;
         }
@@ -109,7 +97,7 @@ export const {
       return true;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }): Promise<any> {
       // Ajouter l'`_id` de MongoDB à l'objet session.user
       if (token?.sub && session.user) {
         session.user.id = token.sub;

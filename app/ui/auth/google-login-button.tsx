@@ -16,8 +16,9 @@ export default function GoogleLoginButton() {
 
 function GoogleButton() {
   return (
-    <Button className='mt-4 w-full'>
-      Se connecter avec Google <ArrowRightIcon className='ml-auto h-5 w-5 ' />
+    <Button className=' w-full md:text-base'>
+      Se connecter avec Google
+      <ArrowRightIcon className='ml-auto h-5 w-5 ' />
     </Button>
   );
 }

@@ -20,9 +20,18 @@ const config: Config = {
           600: '#1E40AF',
         },
         grey: {
+          100: '#F5F5F5',
+          200: '#E5E5E5',
           400: '#A3A3A3',
           500: '#737373',
           600: '#525252',
+        },
+      },
+    },
+    keyframes: {
+      shimmer: {
+        '100%': {
+          transform: 'translateX(100%)',
         },
       },
     },

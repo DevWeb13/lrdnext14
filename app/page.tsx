@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { auth } from '@/auth';
+import { createContext } from 'react';
+
 import clsx from 'clsx';
 export default async function Home() {
   const session = await auth();
@@ -36,12 +38,21 @@ export default async function Home() {
             <ArrowRightIcon className='w-5 md:w-6' />
           </Link>
           {session && (
-            <Link
-              href={`/auth/delete-account/${session?.user?.id}`}
-              className='bg-grey-500 hover:bg-grey-600 flex items-center gap-5 rounded-lg px-6 py-3 text-sm font-medium text-white transition-colors md:text-base'>
-              <span>Supprimer mon compte</span>
-              <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
-            </Link>
+            <>
+              <Link
+                href={`/dashboard`}
+                className='bg-grey-500 hover:bg-grey-600 flex items-center gap-5 rounded-lg px-6 py-3 text-sm font-medium text-white transition-colors md:text-base'>
+                <span>Tableau de bord</span>
+                <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+              </Link>
+
+              <Link
+                href={`/auth/delete-account/${session?.user?.id}`}
+                className='bg-grey-500 hover:bg-grey-600 flex items-center gap-5 rounded-lg px-6 py-3 text-sm font-medium text-white transition-colors md:text-base'>
+                <span>Supprimer mon compte</span>
+                <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+              </Link>
+            </>
           )}
         </div>
       </div>
