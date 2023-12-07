@@ -14,6 +14,8 @@ import { DropboxResetPasswordEmail } from '@/components/email-template';
 import { generateResetPasswordToken } from '@/app/utils/generate-reset-password-token';
 import { renderAsync } from '@react-email/render';
 
+const MODE = process.env.NODE_ENV;
+
 import type {
   BasicUserInfo,
   ResetPasswordUserInfo,
@@ -112,9 +114,14 @@ export async function sendEmailResetPassword(
   const resend = new Resend(process.env.RESEND_API_KEY);
   const resetPasswordToken = await addResetToken(user.email, collection);
 
+  const URL =
+    MODE === 'production'
+      ? 'https://lrdnext14.vercel.app'
+      : 'http://localhost:3000';
+
   const html = await renderAsync(
     DropboxResetPasswordEmail({
-      resetPasswordLink: `http://localhost:3000/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
+      resetPasswordLink: `${URL}/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
       userFirstname: user.name,
     }) as React.ReactElement
   );
