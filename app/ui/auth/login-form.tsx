@@ -9,7 +9,7 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@/app/ui/button';
 import { useFormState, useFormStatus } from 'react-dom';
-import { authenticate } from '@/app/lib/actions/user-actions';
+import { authenticate } from '@/app/lib/actions/account-settings/authenticate';
 import Link from 'next/link';
 
 export default function LoginForm() {

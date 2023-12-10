@@ -11,11 +11,12 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 import { Button } from '@/app/ui/button';
-import { createUser } from '@/app/lib/actions/user-actions';
+
+import { signupSubmit } from '@/app/lib/actions/signup/signup-submit';
 
 export default function SignUpForm() {
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(createUser, initialState);
+  const [state, dispatch] = useFormState(signupSubmit, initialState);
   console.log(state);
 
   return (
@@ -153,29 +154,18 @@ export default function SignUpForm() {
           </div>
         </div>
         <SignupButton />
+
         <div
-          className='flex h-8 items-end space-x-1'
+          id='error'
           aria-live='polite'
-          aria-atomic='true'></div>
-        <div className='flex h-8 items-end space-x-1'>
-          {/* {state === 'CredentialsSignin' && (
+          aria-atomic='true'
+          className='flex h-8 items-end space-x-1'>
+          {state.message && (
             <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">Invalid credentials</p>
+              <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
+              <p className='mt-2 text-sm text-red-500'>{state.message}</p>
             </>
-          )} */}
-          <div
-            id='error'
-            aria-live='polite'
-            aria-atomic='true'
-            className='flex h-8 items-end space-x-1'>
-            {state.message && (
-              <>
-                <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-                <p className='mt-2 text-sm text-red-500'>{state.message}</p>
-              </>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </form>

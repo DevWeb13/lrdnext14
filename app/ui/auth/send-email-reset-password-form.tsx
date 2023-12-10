@@ -4,18 +4,16 @@ import {
   ArrowRightIcon,
   AtSymbolIcon,
   ExclamationCircleIcon,
-  KeyIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '../button';
 import { lusitana } from '../fonts';
 import { useFormState, useFormStatus } from 'react-dom';
-import { sendEmailResetPassword } from '@/app/lib/actions/user-actions';
+import { sendEmailResetPassword } from '@/app/lib/actions/account-settings/send-email-reset-password';
 
 export default function SendEmailResetPassword() {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(sendEmailResetPassword, initialState);
 
-  console.log({ state });
   return (
     <form action={dispatch}>
       <h1 className={`${lusitana.className} mb-3 text-2xl`}>

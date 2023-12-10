@@ -4,10 +4,11 @@ import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { z } from 'zod';
 
-import type { BasicUserInfo } from '@/app/lib/definitions';
+import type { BasicAppUserInfo } from '@/types/app-user';
 import bcrypt from 'bcrypt';
-import connect from '@/app/utils/connect-db';
-import { getBasicUserInfo } from '@/app/lib/actions/user-actions';
+import { connectToCollection } from '@/app/utils/connect-db';
+import { getStatusAndRoleUserInfo } from '@/app/lib/actions/get/get-status-and-role-user-info';
+import { getBasicUserInfo } from '@/app/lib/actions/get/get-basic-user-info';
 
 export const {
   handlers: { GET, POST },
@@ -32,7 +33,7 @@ export const {
           .safeParse(credentials);
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
-          const user = await getBasicUserInfo(email);
+          const user: BasicAppUserInfo | null = await getBasicUserInfo(email);
           if (!user || !user.password) return null;
           const passwordsMatch = await bcrypt.compare(password, user.password);
           if (passwordsMatch) return user;
@@ -45,13 +46,11 @@ export const {
   callbacks: {
     signIn: async ({ user, account, profile }) => {
       console.log({ user, account, profile });
-      const client = await connect();
-      const db = client.db();
-      const users = db.collection('users');
+      const { client, collection } = await connectToCollection('users');
 
       let mongoUserId;
 
-      const existingUser = await users.findOne({ email: user.email });
+      const existingUser = await collection.findOne({ email: user.email });
 
       if (existingUser) {
         // Utiliser l'_id de l'utilisateur existant
@@ -63,7 +62,7 @@ export const {
           (user.name !== existingUser.name ||
             profile?.picture !== existingUser.image)
         ) {
-          await users.updateOne(
+          await collection.updateOne(
             { email: user.email },
             { $set: { name: user.name, image: profile?.picture } }
           );
@@ -71,7 +70,7 @@ export const {
       } else {
         // Si l'utilisateur se connecte via Google et n'existe pas
         if (account?.provider === 'google') {
-          const insertedUser = await users.insertOne({
+          const insertedUser = await collection.insertOne({
             name: user.name, // Nom fourni par Google
             email: user.email, // Email fourni par Google
             image: user.image, // Image fournie par Google
@@ -91,6 +90,7 @@ export const {
       }
 
       client.close();
+      console.log('You deconnected to MongoDb');
 
       user.id = mongoUserId;
 
@@ -99,9 +99,15 @@ export const {
 
     async session({ session, token }): Promise<any> {
       // Ajouter l'`_id` de MongoDB à l'objet session.user
+      // console.log({ session, token });
       if (token?.sub && session.user) {
         session.user.id = token.sub;
+        const role = await getStatusAndRoleUserInfo(token.sub);
+        // console.log({ role });
+        session.user.role = role?.role;
+        session.user.status = role?.status;
       }
+
       return session;
     },
   },

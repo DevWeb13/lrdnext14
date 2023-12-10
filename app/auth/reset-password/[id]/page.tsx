@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import ResetPasswordForm from '@/app/ui/auth/reset-password-form';
-import { getResetPasswordUserInfo } from '@/app/lib/actions/user-actions';
+import { getResetPasswordUserInfo } from '@/app/lib/actions/get/get-reset-password-user-info';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import ResetPasswordFormSkeleton from '@/app/ui/skeletons/reset-password-form-skeletons';

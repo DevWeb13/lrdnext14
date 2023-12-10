@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteUser } from '@/app/lib/actions/user-actions';
+import { deleteUser } from '@/app/lib/actions/account-settings/delete-user';
 import { PowerIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
 

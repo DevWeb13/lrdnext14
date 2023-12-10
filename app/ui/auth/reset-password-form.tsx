@@ -1,4 +1,3 @@
-import { createUser } from '@/app/lib/actions/user-actions';
 import {
   ArrowRightIcon,
   ExclamationCircleIcon,
@@ -7,11 +6,11 @@ import {
 import { useFormState, useFormStatus } from 'react-dom';
 import { lusitana } from '../fonts';
 import { Button } from '@/app/ui/button';
-import { resetPasswordUser } from '@/app/lib/actions/user-actions';
+import { resetPassword } from '@/app/lib/actions/account-settings/reset-password';
 
 export default function ResetPasswordForm({ id }: { id: string }) {
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(resetPasswordUser, initialState);
+  const [state, dispatch] = useFormState(resetPassword, initialState);
   console.log(state);
   return (
     <form

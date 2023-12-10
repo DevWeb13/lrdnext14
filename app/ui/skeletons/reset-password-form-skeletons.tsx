@@ -1,9 +1,6 @@
 import { ArrowRightIcon, KeyIcon } from '@heroicons/react/24/outline';
 import ButtonSkeleton from './button-skeleton';
-
-// Loading animation
-const shimmer =
-  'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
+import { shimmer } from './shimmer';
 
 export default function ResetPasswordFormSkeleton() {
   return (
@@ -11,10 +8,7 @@ export default function ResetPasswordFormSkeleton() {
       className={`${shimmer} space-y-3 relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm text-grey-100`}>
       <div className={`flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8`}>
         <h1 className={`mb-3 text-2xl text-grey-200`}>Nouveau mot de passe</h1>
-        <input
-          type='hidden'
-          name='id'
-        />
+
         <div className='w-full'>
           <div className='mt-4'>
             <label className='mb-3 mt-5 block text-xs font-medium text-grey-200'>

@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { auth } from '@/auth';
-import { createContext } from 'react';
 
 import clsx from 'clsx';
 export default async function Home() {

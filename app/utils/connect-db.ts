@@ -25,4 +25,10 @@ export default async function connect() {
     throw new Error('Failed to connect to MongoDB');
   }
 }
-// connect().catch(console.dir);
+
+export async function connectToCollection(collectionName: string) {
+  const client = await connect();
+  const db = client.db();
+  const collection = db.collection(collectionName);
+  return { client, collection };
+}
