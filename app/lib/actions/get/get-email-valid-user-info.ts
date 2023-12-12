@@ -19,7 +19,7 @@ import { ObjectId } from 'mongodb';
 export async function getEmailValidUserInfo(
   id: string,
   token: string
-): Promise<String> {
+): Promise<string> {
   try {
     await connect();
 
