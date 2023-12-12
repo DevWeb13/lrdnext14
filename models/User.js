@@ -31,7 +31,6 @@ const UserSchema = new Schema(
     emailVerificationToken: {
       type: String,
       default: null,
-      default: null,
     },
     emailVerificationTokenExpiredAt: {
       type: Date,
