@@ -71,21 +71,25 @@ export default function VerifyEmailPage() {
     );
   }
 
-  if (isValidToken === 'invalidToken') {
+  if (isValidToken === 'invalidToken' && id && email && newPassword && name) {
     return (
       <ResendEmailForm
         id={id}
-        email={email!}
-        newPassword={newPassword!}
-        name={name!}
+        email={email}
+        newPassword={newPassword}
+        name={name}
       />
     );
   }
 
-  return (
-    <ValidEmailForm
-      id={id}
-      newPassword={newPassword!}
-    />
-  );
+  if (newPassword) {
+    return (
+      <ValidEmailForm
+        id={id}
+        newPassword={newPassword}
+      />
+    );
+  }
+
+  return <div>Informations manquantes pour réinitialiser le mot de passe.</div>;
 }
