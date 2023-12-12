@@ -40,7 +40,7 @@ async function checkSignupFormData(
     };
   }
 
-  if (existingUser && existingUser.password !== null) {
+  if (existingUser?.password !== null) {
     return {
       errors: { email: ['Cet e-mail est déjà utilisé par un autre compte.'] },
       message: 'Veuillez vérifier vos saisies.',
