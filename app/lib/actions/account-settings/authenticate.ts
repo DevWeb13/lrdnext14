@@ -24,11 +24,10 @@ export async function authenticate(
     await signIn('credentials', Object.fromEntries(formData));
   } catch (error) {
     if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Identifiants incorrects.';
-        default:
-          return 'Something went wrong.';
+      if (error.type === 'CredentialsSignin') {
+        return 'Identifiants incorrects.';
+      } else {
+        return 'Something went wrong.';
       }
     }
     throw error;
