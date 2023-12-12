@@ -15,7 +15,7 @@ const MODE = process.env.NODE_ENV;
 export async function sendEmailResetPassword(
   prevState: FormErrorState,
   formData: FormData
-): Promise<FormErrorState | void> {
+): Promise<FormErrorState> {
   try {
     // Valider les données du formulaire
     const validatedUser = EmailResetPassword.safeParse({

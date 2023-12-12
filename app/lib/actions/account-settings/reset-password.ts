@@ -20,7 +20,7 @@ import { redirect } from 'next/navigation';
 export async function resetPassword(
   prevState: FormErrorState,
   formData: FormData
-): Promise<FormErrorState | void> {
+): Promise<FormErrorState> {
   // Modification pour permettre un retour void
   try {
     // Valider les données du formulaire
