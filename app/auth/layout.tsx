@@ -1,3 +1,5 @@
+// app/auth/layout.tsx
+
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   return (
     <main className='flex items-center justify-center md:h-screen'>
