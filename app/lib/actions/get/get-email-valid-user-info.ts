@@ -1,6 +1,7 @@
 'use server';
 
-import { connectToCollection } from '@/app/utils/connect-db';
+import connect from '@/app/utils/connect-db';
+import User from '@/models/User';
 import { ObjectId } from 'mongodb';
 
 /**
@@ -20,18 +21,16 @@ export async function getEmailValidUserInfo(
   token: string
 ): Promise<String> {
   try {
-    const { client, collection } = await connectToCollection('users');
+    await connect();
 
     // Rechercher l'utilisateur par id
     // Convertir la chaîne id en ObjectId
     const objectId = new ObjectId(id);
 
-    const user = await collection.findOne({ _id: objectId });
+    const user = await User.findOne({ _id: objectId });
     // Retourner les informations de l'utilisateur (ou null si non trouvé)
     console.log({ user });
     if (!user || user.password !== null) {
-      client.close();
-      console.log('You deconnected to MongoDb');
       return 'alreadyValid';
     }
 
@@ -46,7 +45,7 @@ export async function getEmailValidUserInfo(
     }
 
     // Le token a expiré ou est invalide
-    await collection.updateOne(
+    await User.updateOne(
       { _id: objectId },
       {
         $set: {
@@ -55,8 +54,6 @@ export async function getEmailValidUserInfo(
         },
       }
     );
-    client.close();
-    console.log('You deconnected to MongoDb');
 
     return 'invalidToken';
   } catch (error) {

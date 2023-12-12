@@ -4,10 +4,12 @@ import bcrypt from 'bcrypt';
 
 import { redirect } from 'next/navigation';
 
-import { SignUpFormSchema } from '@/schema/user-form-schema';
+import { SignUpFormSchema } from '@/schema/zod/user-form-schema';
 import { addEmailVerificationToken } from './add-email-verification-token';
-import { connectToCollection } from '@/app/utils/connect-db';
+import connect from '@/app/utils/connect-db';
 import { sendVerificationEmail } from '@/app/lib/actions/signup/send-verification-email';
+
+import User from '@/models/User';
 
 import type { AppUser, NewAppUser } from '@/types/app-user';
 import type { FormErrorState } from '@/types/form-error-state';
@@ -56,7 +58,6 @@ export async function signupSubmit(
   prevState: FormErrorState,
   formData: FormData
 ): Promise<FormErrorState> {
-  const { collection, client } = await connectToCollection('users');
   const signUpData = {
     name: formData.get('name')?.toString(),
     email: formData.get('email')?.toString(),
@@ -64,84 +65,92 @@ export async function signupSubmit(
     confirmPassword: formData.get('confirmPassword')?.toString(),
   };
   const { name, email, password, confirmPassword } = signUpData;
-  const existingUser = await collection.findOne({ email });
+  try {
+    await connect();
+    const existingUser = await User.findOne({ email });
 
-  console.log({ name, email, password, confirmPassword });
-  prevState = await checkSignupFormData(signUpData, existingUser);
+    console.log({ name, email, password, confirmPassword });
+    const checkSignupFormDataState = await checkSignupFormData(
+      signUpData,
+      existingUser
+    );
 
-  if (prevState.message) {
-    return prevState;
-  }
-
-  // Hasher le mot de passe
-  const hashedPassword = await bcrypt.hash(password!, 10);
-
-  if (existingUser) {
-    // ajouter le token de confirmation et la date d'expiration
-    const { emailVerificationToken, emailVerificationTokenExpiredAt } =
-      await addEmailVerificationToken(existingUser._id.toString(), collection);
-
-    // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
-    prevState = await sendVerificationEmail({
-      userName: name!,
-      id: existingUser._id.toString(),
-      email: email!,
-      hashedPassword,
-      emailVerificationToken,
-      emailVerificationTokenExpiredAt,
-    });
-
-    if (prevState.message) {
+    if (checkSignupFormDataState.message) {
       return prevState;
     }
 
-    client.close();
-    // redirection vers la page de checked-email
-    redirect('/auth/checked-email');
+    // Hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(password!, 10);
+
+    if (existingUser) {
+      // ajouter le token de confirmation et la date d'expiration
+      const { emailVerificationToken, emailVerificationTokenExpiredAt } =
+        await addEmailVerificationToken(existingUser._id.toString(), User);
+
+      // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
+      const sendVerificationEmailState = await sendVerificationEmail({
+        name: name!,
+        id: existingUser._id.toString(),
+        email: email!,
+        hashedPassword,
+        emailVerificationToken,
+        emailVerificationTokenExpiredAt,
+      });
+
+      if (sendVerificationEmailState.message) {
+        return prevState;
+      }
+    } else {
+      // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
+      const newUser: NewAppUser = new User({
+        role: 'user',
+        status: 'pendingVerification',
+        name: name!,
+        email: email!,
+        image: null,
+        password: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerificationToken: null,
+        emailVerificationTokenExpiredAt: null,
+        resetPasswordToken: null,
+        resetPasswordTokenExpiredAt: null,
+      });
+
+      // Ajouter le nouvel utilisateur à la base de données et récupérer son id
+
+      const createdUser = await User.create(newUser);
+
+      // ajouter le token de confirmation et la date d'expiration
+      const { emailVerificationToken, emailVerificationTokenExpiredAt } =
+        await addEmailVerificationToken(createdUser._id.toString(), User);
+
+      // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
+      const sendVerificationEmailState = await sendVerificationEmail({
+        name: name!,
+        id: createdUser._id.toString(),
+        email: email!,
+        hashedPassword,
+        emailVerificationToken,
+        emailVerificationTokenExpiredAt,
+      });
+
+      if (sendVerificationEmailState.message) {
+        return prevState;
+      }
+
+      return {
+        errors: {},
+        message: null,
+      };
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'inscription :", error);
+    return {
+      errors: {},
+      message:
+        'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.',
+    };
   }
-
-  // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
-  const newUser: NewAppUser = {
-    role: 'user',
-    status: 'pendingVerification',
-    name: name!,
-    email: email!,
-    image: null,
-    password: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    emailVerificationToken: null,
-    emailVerificationTokenExpiredAt: null,
-    resetPasswordToken: null,
-    resetPasswordTokenExpiredAt: null,
-  };
-
-  // Ajouter le nouvel utilisateur à la base de données et récupérer son id
-
-  const { insertedId } = await collection.insertOne(newUser);
-
-  // ajouter le token de confirmation et la date d'expiration
-  const { emailVerificationToken, emailVerificationTokenExpiredAt } =
-    await addEmailVerificationToken(insertedId.toString(), collection);
-
-  // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
-  prevState = await sendVerificationEmail({
-    userName: name!,
-    id: insertedId.toString(),
-    email: email!,
-    hashedPassword,
-    emailVerificationToken,
-    emailVerificationTokenExpiredAt,
-  });
-
-  if (prevState.message) {
-    return prevState;
-  }
-
-  // Fermer la connexion à la base de données
-
-  client.close();
-  prevState.message = null;
-  // redirection vers la page de checked-email
   redirect('/auth/checked-email');
 }

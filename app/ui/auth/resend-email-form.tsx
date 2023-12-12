@@ -1,5 +1,4 @@
 import { resendVerificationEmail } from '@/app/lib/actions/signup/resend-verification-email';
-import { connectToCollection } from '@/app/utils/connect-db';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import { useFormState, useFormStatus } from 'react-dom';

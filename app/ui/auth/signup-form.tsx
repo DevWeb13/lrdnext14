@@ -159,10 +159,10 @@ export default function SignUpForm() {
           id='error'
           aria-live='polite'
           aria-atomic='true'
-          className='flex h-8 items-end space-x-1'>
+          className='flex h-8 items-center space-x-1'>
           {state.message && (
             <>
-              <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
+              <ExclamationCircleIcon className='h-8 w-8 text-red-500' />
               <p className='mt-2 text-sm text-red-500'>{state.message}</p>
             </>
           )}

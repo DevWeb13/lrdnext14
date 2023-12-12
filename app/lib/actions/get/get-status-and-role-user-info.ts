@@ -1,6 +1,7 @@
 'use server';
 
-import { connectToCollection } from '@/app/utils/connect-db';
+import connect from '@/app/utils/connect-db';
+import User from '@/models/User';
 import { AppUser } from '@/types/app-user';
 import { ObjectId } from 'mongodb';
 
@@ -16,27 +17,22 @@ export async function getStatusAndRoleUserInfo(id: string): Promise<{
   status: AppUser['status'];
 } | null> {
   try {
-    // Utiliser la fonction connect pour obtenir le client MongoDB
-    const { client, collection } = await connectToCollection('users');
+    await connect();
 
     // Rechercher l'utilisateur par id
     // Convertir la chaîne id en ObjectId
     const objectId = new ObjectId(id);
 
-    const user = await collection.findOne({ _id: objectId });
+    const user = await User.findOne({ _id: objectId });
     // Retourner les informations de l'utilisateur (ou null si non trouvé)
     // console.log({ user });
     if (!user) {
       // L'utilisateur n'existe pas
-      client.close();
-      console.log('You deconnected to MongoDb');
       return null;
     }
 
     const { role, status } = user;
 
-    client.close();
-    console.log('You deconnected to MongoDb');
     return {
       role,
       status,

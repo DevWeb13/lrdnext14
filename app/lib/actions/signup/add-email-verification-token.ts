@@ -1,13 +1,17 @@
 'use server';
 
 import { generateEmailVerificationToken } from '@/app/utils/generate-email-verification-token';
-import { Collection, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
+import { Document, Model } from 'mongoose';
 
-export async function addEmailVerificationToken(id: string, users: Collection) {
+export async function addEmailVerificationToken(
+  id: string,
+  User: Model<Document>
+) {
   const { emailVerificationToken, emailVerificationTokenExpiredAt } =
     generateEmailVerificationToken();
 
-  await users.updateOne(
+  await User.updateOne(
     { _id: new ObjectId(id) },
     { $set: { emailVerificationToken, emailVerificationTokenExpiredAt } }
   );

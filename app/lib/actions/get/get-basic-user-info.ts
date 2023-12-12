@@ -1,7 +1,10 @@
+// app/lib/actions/get/get-basic-user-info.ts
+
 'use server';
 
 import { BasicAppUserInfo } from '@/types/app-user';
-import { connectToCollection } from '@/app/utils/connect-db';
+import connect from '@/app/utils/connect-db';
+import User from '@/models/User';
 
 /**
  * The function `getBasicUserInfo` retrieves basic user information from a MongoDB collection based on
@@ -15,12 +18,11 @@ export async function getBasicUserInfo(
   email: string
 ): Promise<BasicAppUserInfo | null> {
   try {
-    // Utiliser la fonction connect pour obtenir le client MongoDB
-    const { client, collection } = await connectToCollection('users');
+    await connect();
 
     // Rechercher l'utilisateur par email
 
-    const user = await collection.findOne({ email });
+    const user = await User.findOne({ email });
     // Retourner les informations de l'utilisateur (ou null si non trouvé)
 
     if (user) {
@@ -31,14 +33,12 @@ export async function getBasicUserInfo(
         name: user.name,
         email: user.email,
       };
-      client.close();
-      console.log('You deconnected to MongoDb');
 
       return simpleUser;
     }
     return null;
   } catch (error) {
-    console.error('Failed to connect database ', error);
-    throw new Error('Failet to connect database.');
+    console.error('Erreur de connexion à la base de données', error);
+    throw new Error('Erreur de connexion à la base de données');
   }
 }

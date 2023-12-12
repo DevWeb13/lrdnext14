@@ -8,7 +8,7 @@ import { Resend } from 'resend';
 const MODE = process.env.NODE_ENV;
 
 export async function sendVerificationEmail(user: {
-  userName: string;
+  name: string;
   id: string;
   email: string;
   hashedPassword: string;
@@ -23,7 +23,7 @@ export async function sendVerificationEmail(user: {
       : 'http://localhost:3000';
 
   const {
-    userName,
+    name,
     id,
     email,
     hashedPassword,
@@ -33,8 +33,8 @@ export async function sendVerificationEmail(user: {
 
   const html = await renderAsync(
     ConfirmEmail({
-      confirmEmailLink: `${URL}/auth/verify-email/${id}?token=${emailVerificationToken}&email=${email}&newPassword=${hashedPassword}&name=${userName}&expires=${emailVerificationTokenExpiredAt}`,
-      userFirstname: userName,
+      confirmEmailLink: `${URL}/auth/verify-email/${id}?token=${emailVerificationToken}&email=${email}&newPassword=${hashedPassword}&name=${name}&expires=${emailVerificationTokenExpiredAt}`,
+      userFirstname: name,
     }) as React.ReactElement
   );
 

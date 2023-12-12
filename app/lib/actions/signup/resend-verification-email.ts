@@ -1,10 +1,11 @@
 'use server';
 
-import { connectToCollection } from '@/app/utils/connect-db';
+import connect from '@/app/utils/connect-db';
 import { FormErrorState } from '@/types/form-error-state';
 import { redirect } from 'next/navigation';
 import { sendVerificationEmail } from './send-verification-email';
 import { addEmailVerificationToken } from './add-email-verification-token';
+import User from '@/models/User';
 
 export async function resendVerificationEmail(
   prevState: FormErrorState,
@@ -25,14 +26,14 @@ export async function resendVerificationEmail(
   } = resendVerificationEmailData;
 
   try {
-    const { client, collection } = await connectToCollection('users');
-    console.log({ client, collection });
+    await connect();
+
     const { emailVerificationToken, emailVerificationTokenExpiredAt } =
-      await addEmailVerificationToken(id, collection);
+      await addEmailVerificationToken(id, User);
 
     console.log({ emailVerificationToken, emailVerificationTokenExpiredAt });
     await sendVerificationEmail({
-      userName: name!,
+      name: name!,
       id,
       email: email!,
       hashedPassword: newPassword!,
@@ -40,10 +41,8 @@ export async function resendVerificationEmail(
       emailVerificationTokenExpiredAt,
     });
     console.log('Email sent');
-    client.close();
-    console.log('You deconnected to MongoDb');
+
     prevState.message = null;
-    console.log(prevState);
   } catch (error) {
     return {
       errors: {},

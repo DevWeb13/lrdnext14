@@ -1,6 +1,7 @@
 'use server';
 
-import { connectToCollection } from '@/app/utils/connect-db';
+import connect from '@/app/utils/connect-db';
+import User from '@/models/User';
 import { FormErrorState } from '@/types/form-error-state';
 import { ObjectId } from 'mongodb';
 import { redirect } from 'next/navigation';
@@ -24,8 +25,9 @@ export async function validEmail(
 
   // Mettre à jour l'utilisateur existant avec le nouveau mot de passe
   try {
-    const { client, collection } = await connectToCollection('users');
-    await collection.updateOne(
+    await connect();
+
+    await User.updateOne(
       { _id: objectId },
       {
         $set: {
@@ -37,8 +39,6 @@ export async function validEmail(
       }
     );
 
-    // Fermer la connexion à la base de données et rediriger
-    client.close();
     prevState.message = null;
   } catch (error) {
     return {
