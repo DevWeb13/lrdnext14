@@ -33,10 +33,10 @@ export async function resendVerificationEmail(
 
     console.log({ emailVerificationToken, emailVerificationTokenExpiredAt });
     await sendVerificationEmail({
-      name: name!,
+      name,
       id,
-      email: email!,
-      hashedPassword: newPassword!,
+      email,
+      hashedPassword: newPassword,
       emailVerificationToken,
       emailVerificationTokenExpiredAt,
     });
