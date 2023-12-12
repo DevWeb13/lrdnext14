@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   return (
     <main className='flex items-center justify-center md:h-screen'>
