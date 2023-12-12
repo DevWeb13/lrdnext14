@@ -1,6 +1,7 @@
+// app/ui/auth/logout-form.tsx
+
 import { signOut } from '@/auth';
 import { ArrowRightIcon, PowerIcon } from '@heroicons/react/24/outline';
-import { useFormStatus } from 'react-dom';
 import { Button } from '../button';
 
 export default function LogoutForm() {

@@ -1,6 +1,7 @@
+// app/auth/login/page.tsx
+
 import LoginForm from '@/app/ui/auth/login-form';
 import GoogleLoginButton from '@/app/ui/auth/google-login-button';
-import Link from 'next/link';
 export default function LoginPage() {
   return (
     <>

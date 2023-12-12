@@ -2,7 +2,6 @@
 
 'use client';
 
-import { authenticate } from '@/app/lib/actions/account-settings/authenticate';
 import { deleteUser } from '@/app/lib/actions/account-settings/delete-user';
 import {
   PowerIcon,
