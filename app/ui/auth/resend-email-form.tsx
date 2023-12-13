@@ -9,10 +9,10 @@ export default function ResendEmailForm({
   newPassword,
   name,
 }: {
-  id: string;
-  email: string;
-  newPassword: string;
-  name: string;
+  readonly id: string;
+  readonly email: string;
+  readonly newPassword: string;
+  readonly name: string;
 }) {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(resendVerificationEmail, initialState);

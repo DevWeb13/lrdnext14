@@ -11,8 +11,8 @@ export default function ValidEmailForm({
   id,
   newPassword,
 }: {
-  id: string;
-  newPassword: string;
+  readonly id: string;
+  readonly newPassword: string;
 }) {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(validEmail, initialState);

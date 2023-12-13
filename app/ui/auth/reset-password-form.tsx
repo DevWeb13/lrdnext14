@@ -8,7 +8,7 @@ import { lusitana } from '../fonts';
 import { Button } from '@/app/ui/button';
 import { resetPassword } from '@/app/lib/actions/account-settings/reset-password';
 
-export default function ResetPasswordForm({ id }: { id: string }) {
+export default function ResetPasswordForm({ id }: { readonly id: string }) {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(resetPassword, initialState);
   console.log(state);
