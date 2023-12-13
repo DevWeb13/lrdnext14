@@ -4,8 +4,8 @@ export default function ButtonSkeleton({
   classname,
   children,
 }: {
-  classname?: string;
-  children: React.ReactNode;
+  readonly classname?: string;
+  readonly children: React.ReactNode;
 }) {
   return (
     <button
