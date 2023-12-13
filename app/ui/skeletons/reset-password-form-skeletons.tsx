@@ -4,18 +4,18 @@ import { shimmer } from './shimmer';
 
 export default function ResetPasswordFormSkeleton() {
   return (
-    <form
+    <div
       className={`${shimmer} space-y-3 relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm text-grey-100`}>
       <div className={`flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8`}>
         <h1 className={`mb-3 text-2xl text-grey-200`}>Nouveau mot de passe</h1>
 
         <div className='w-full'>
           <div className='mt-4'>
-            <label className='mb-3 mt-5 block text-xs font-medium text-grey-200'>
+            <div className='mb-3 mt-5 block text-xs font-medium text-grey-200'>
               Entrer votre nouveau mot de passe
-            </label>
+            </div>
             <div className='relative'>
-              <input
+              <div
                 className='peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-grey-200'
                 placeholder='Entrer votre nouveau mot de passe'
               />
@@ -24,11 +24,11 @@ export default function ResetPasswordFormSkeleton() {
             <div></div>
           </div>
           <div className='mt-4'>
-            <label className='mb-3 mt-5 block text-xs font-medium text-transparent'>
+            <div className='mb-3 mt-5 block text-xs font-medium text-transparent'>
               Confirmer votre nouveau mot de passe
-            </label>
+            </div>
             <div className='relative'>
-              <input
+              <div
                 className='peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-grey-200'
                 placeholder='Confirmer votre nouveau mot de passe'
               />
@@ -40,7 +40,7 @@ export default function ResetPasswordFormSkeleton() {
         <ResetPasswordButtonSkeleton />
         <div className='flex h-8 items-end space-x-1' />
       </div>
-    </form>
+    </div>
   );
 }
 
