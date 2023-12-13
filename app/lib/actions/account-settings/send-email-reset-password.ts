@@ -1,6 +1,5 @@
 'use server';
 
-import ResetPasswordEmail from '@/components/reset-password-email';
 import { EmailResetPassword } from '@/schema/zod/user-form-schema';
 import { FormErrorState } from '@/types/form-error-state';
 import { renderAsync } from '@react-email/components';
@@ -9,6 +8,7 @@ import { Resend } from 'resend';
 import { addResetPasswordToken } from './add-reset-password-token';
 import connect from '@/app/utils/connect-db';
 import User from '@/models/User';
+import EmailTemplate from '@/components/email-template';
 
 const MODE = process.env.NODE_ENV;
 
@@ -40,6 +40,18 @@ export async function sendEmailResetPassword(
       };
     }
 
+    if (!user.password) {
+      return {
+        errors: {
+          email: [
+            "Ce compte n'est pas validé, veuillez valider votre email pour pouvoir réinitialiser votre mot de passe.",
+          ],
+        },
+        message:
+          'Veuillez valider votre compte pour pouvoir réinitialiser votre mot de passe.',
+      };
+    }
+
     const resend = new Resend(process.env.RESEND_API_KEY);
     const resetPasswordToken = await addResetPasswordToken(user.email, User);
 
@@ -49,9 +61,15 @@ export async function sendEmailResetPassword(
         : 'http://localhost:3000';
 
     const html = await renderAsync(
-      ResetPasswordEmail({
-        resetPasswordLink: `${URL}/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
-        userFirstname: user.name,
+      EmailTemplate({
+        userName: user.name,
+        link: `${URL}/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
+        previewText: 'Réinitialiser votre mot de passe',
+        sectionText:
+          "Quelqu&apos;un a récemment demandé un changement de mot de passe pour votre compte LaReponseDev. Si c'est votre cas, vous pouvez définir un nouveau mot de passe ici.",
+        buttonText: 'Réinitialiser votre mot de passe',
+        footerIntroText:
+          "Si vous ne souhaitez pas modifier votre mot de passe ou si vous ne l'avez pas demandé, ignorez et supprimez simplement ce message.",
       }) as React.ReactElement
     );
 
@@ -61,9 +79,6 @@ export async function sendEmailResetPassword(
       subject: 'Réinitialisation du mot de passe',
       html,
     });
-
-    // Pas d'erreur, redirection vers login
-    redirect('/auth/login');
   } catch (error) {
     console.error(
       "Erreur lors de l'envoi de l'email de réinitialisation :",
@@ -74,4 +89,6 @@ export async function sendEmailResetPassword(
       message: "Erreur d'envoi de l'email : veuillez réessayer plus tard.",
     };
   }
+  // Pas d'erreur, redirection vers login
+  redirect('/auth/login');
 }

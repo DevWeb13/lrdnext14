@@ -1,3 +1,5 @@
+// components/email-template.tsx
+
 import {
   Body,
   Button,
@@ -11,21 +13,29 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
-interface ConfirmEmailProps {
-  userFirstname?: string;
-  confirmEmailLink?: string;
+interface EmailTemplateProps {
+  userName?: string;
+  link?: string;
+  previewText?: string;
+  sectionText?: string;
+  buttonText?: string;
+  footerIntroText?: string;
 }
 
 const baseUrl = 'https://demo.react.email/';
 
-export const ConfirmEmail = ({
-  userFirstname = 'destinataire',
-  confirmEmailLink = 'https://dropbox.com',
-}: ConfirmEmailProps) => {
+export const EmailTemplate = ({
+  userName = '',
+  link = '',
+  previewText = '',
+  sectionText = '',
+  buttonText = '',
+  footerIntroText = '',
+}: EmailTemplateProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Confirmer votre adresse e-mail</Preview>
+      <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Img
@@ -35,19 +45,15 @@ export const ConfirmEmail = ({
             alt='Dropbox'
           />
           <Section>
-            <Text style={text}>Bonjour {userFirstname},</Text>
-            <Text style={text}>
-              Bienvenue sur LaReponseDev ! Nous sommes ravis de vous compter
-              parmi nos membres. Veuillez confirmer votre adresse e-mail en
-              cliquant sur le lien ci-dessous.
-            </Text>
+            <Text style={text}>Bonjour {userName},</Text>
+            <Text style={text}>{sectionText}</Text>
 
             <Button
               style={button}
-              href={confirmEmailLink}>
-              Confirmer mon adresse e-mail
+              href={link}>
+              {buttonText}
             </Button>
-            <Text style={text}>Nous vous remercions de votre confiance.</Text>
+            <Text style={text}>{footerIntroText}</Text>
             <Text style={text}>
               Pour assurer la sécurité de votre compte, veuillez ne pas
               transférer cet e-mail à qui que ce soit.
@@ -60,7 +66,7 @@ export const ConfirmEmail = ({
   );
 };
 
-export default ConfirmEmail;
+export default EmailTemplate;
 
 const main = {
   backgroundColor: '#f6f9fc',
@@ -93,8 +99,4 @@ const button = {
   display: 'block',
   width: '210px',
   padding: '14px 7px',
-};
-
-const anchor = {
-  textDecoration: 'underline',
 };

@@ -40,7 +40,7 @@ async function checkSignupFormData(
     };
   }
 
-  if (existingUser?.password !== null) {
+  if (existingUser?.password) {
     return {
       errors: { email: ['Cet e-mail est déjà utilisé par un autre compte.'] },
       message: 'Veuillez vérifier vos saisies.',
@@ -65,15 +65,17 @@ export async function signupSubmit(
     confirmPassword: formData.get('confirmPassword')?.toString(),
   };
   const { name, email, password, confirmPassword } = signUpData;
+  console.log({ name, email, password, confirmPassword });
   try {
     await connect();
     const existingUser = await User.findOne({ email });
+    console.log({ existingUser });
 
-    console.log({ name, email, password, confirmPassword });
     const checkSignupFormDataState = await checkSignupFormData(
       signUpData,
       existingUser
     );
+    console.log({ checkSignupFormDataState });
 
     if (checkSignupFormDataState.message) {
       return prevState;
@@ -81,8 +83,10 @@ export async function signupSubmit(
 
     // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password!, 10);
+    console.log({ hashedPassword });
 
     if (existingUser) {
+      console.log('test');
       // ajouter le token de confirmation et la date d'expiration
       const { emailVerificationToken, emailVerificationTokenExpiredAt } =
         await addEmailVerificationToken(existingUser._id.toString(), User);
@@ -102,6 +106,7 @@ export async function signupSubmit(
       }
     } else {
       // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
+      console.log('test 2');
       const newUser: NewAppUser = new User({
         role: 'user',
         status: 'pendingVerification',
@@ -125,6 +130,8 @@ export async function signupSubmit(
       const { emailVerificationToken, emailVerificationTokenExpiredAt } =
         await addEmailVerificationToken(createdUser._id.toString(), User);
 
+      console.log({ emailVerificationToken, emailVerificationTokenExpiredAt });
+
       // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
       const sendVerificationEmailState = await sendVerificationEmail({
         name: name!,
@@ -134,15 +141,11 @@ export async function signupSubmit(
         emailVerificationToken,
         emailVerificationTokenExpiredAt,
       });
+      console.log({ sendVerificationEmailState });
 
       if (sendVerificationEmailState.message) {
         return prevState;
       }
-
-      return {
-        errors: {},
-        message: null,
-      };
     }
   } catch (error) {
     console.error("Erreur lors de l'inscription :", error);

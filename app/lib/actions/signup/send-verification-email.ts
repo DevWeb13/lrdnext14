@@ -1,6 +1,6 @@
 'use server';
 
-import ConfirmEmail from '@/components/confirm-email';
+import EmailTemplate from '@/components/email-template';
 import { FormErrorState } from '@/types/form-error-state';
 import { renderAsync } from '@react-email/components';
 import { Resend } from 'resend';
@@ -32,9 +32,14 @@ export async function sendVerificationEmail(user: {
   } = user;
 
   const html = await renderAsync(
-    ConfirmEmail({
-      confirmEmailLink: `${URL}/auth/verify-email/${id}?token=${emailVerificationToken}&email=${email}&newPassword=${hashedPassword}&name=${name}&expires=${emailVerificationTokenExpiredAt}`,
-      userFirstname: name,
+    EmailTemplate({
+      userName: name,
+      link: `${URL}/auth/verify-email/${id}?token=${emailVerificationToken}&email=${email}&newPassword=${hashedPassword}&name=${name}&expires=${emailVerificationTokenExpiredAt}`,
+      previewText: 'Confirmer votre adresse e-mail',
+      sectionText:
+        'Bienvenue sur LaReponseDev ! Nous sommes ravis de vous compter parmi nos membres. Veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous.',
+      buttonText: 'Confirmer votre adresse e-mail',
+      footerIntroText: 'Nous vous remercions de votre confiance.',
     }) as React.ReactElement
   );
 
