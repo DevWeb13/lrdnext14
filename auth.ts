@@ -73,28 +73,27 @@ export const {
           }
         } else {
           // Si l'utilisateur se connecte via Google et n'existe pas
-          if (account?.provider === 'google') {
-            const newUser: NewAppUser = new User({
-              name: user.name!, // Nom fourni par Google
-              email: user.email!, // Email fourni par Google
-              image: user.image, // Image fournie par Google
-              role: 'user', // Valeur par défaut
-              status: 'active', // Valeur par défaut
-              // Autres champs avec des valeurs par défaut
-              password: null, // Pas de mot de passe pour les utilisateurs Google
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              emailVerificationToken: null,
-              emailVerificationTokenExpiredAt: null,
-              resetPasswordToken: null,
-              resetPasswordTokenExpiredAt: null,
-            });
-            try {
-              const insertedUser = await User.create(newUser);
-              mongoUserId = insertedUser.insertedId;
-            } catch (err) {
-              console.log(err + ' ' + 'p');
-            }
+
+          const newUser: NewAppUser = new User({
+            name: user.name!, // Nom fourni par Google
+            email: user.email!, // Email fourni par Google
+            image: user.image, // Image fournie par Google
+            role: 'user', // Valeur par défaut
+            status: 'active', // Valeur par défaut
+            // Autres champs avec des valeurs par défaut
+            password: null, // Pas de mot de passe pour les utilisateurs Google
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            emailVerificationToken: null,
+            emailVerificationTokenExpiredAt: null,
+            resetPasswordToken: null,
+            resetPasswordTokenExpiredAt: null,
+          });
+          try {
+            const insertedUser = await User.create(newUser);
+            mongoUserId = insertedUser.insertedId;
+          } catch (err) {
+            console.log(err + ' ' + 'p');
           }
         }
 
