@@ -113,7 +113,6 @@ export const {
         if (token?.sub && session.user) {
           session.user.id = token.sub;
           const role = await getStatusAndRoleUserInfo(token.sub);
-          // console.log({ role });
           session.user.role = role?.role;
           session.user.status = role?.status;
         }
