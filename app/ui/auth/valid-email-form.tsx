@@ -38,7 +38,7 @@ export default function ValidEmailForm({ id }: { readonly id: string }) {
 
 function ValidEmailButton() {
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
+    <Button className="mt-4 w-full">
       Cliquez pour valider votre compte{' '}
       <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
