@@ -1,8 +1,6 @@
 // app/ui/skeletons/auth/logout-form-skeleton.tsx
 
 import { PowerIcon } from '@heroicons/react/24/outline';
-import email from 'next-auth/providers/email';
-import { signOut } from 'next-auth/react';
 import ButtonSkeleton from '../button-skeleton';
 import { shimmer } from '../shimmer';
 

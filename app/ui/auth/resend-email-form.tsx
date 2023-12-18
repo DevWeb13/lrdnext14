@@ -8,23 +8,21 @@ export default function ResendEmailForm({ email }: { readonly email: string }) {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(resendVerificationEmail, initialState);
   return (
-    <>
-      <form action={dispatch}>
-        <input type="hidden" name="email" value={email} />
+    <form action={dispatch}>
+      <input type="hidden" name="email" value={email} />
 
-        <ResendEmailButton />
-        <div
-          id="error"
-          aria-live="polite"
-          aria-atomic="true"
-          className="flex h-8 items-end space-x-1"
-        >
-          {state.message && (
-            <p className="mt-2 text-sm text-green-500">{state.message}</p>
-          )}
-        </div>
-      </form>
-    </>
+      <ResendEmailButton />
+      <div
+        id="error"
+        aria-live="polite"
+        aria-atomic="true"
+        className="flex h-8 items-end space-x-1"
+      >
+        {state.message && (
+          <p className="mt-2 text-sm text-green-500">{state.message}</p>
+        )}
+      </div>
+    </form>
   );
 }
 

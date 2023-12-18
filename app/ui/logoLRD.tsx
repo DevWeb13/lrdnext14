@@ -4,10 +4,10 @@ export default function LogoLRD({
   color = '#000000',
   className = '',
 }: {
-  width?: string;
-  height?: string;
-  color?: string;
-  className?: string;
+  readonly width?: string;
+  readonly height?: string;
+  readonly color?: string;
+  readonly className?: string;
 }) {
   return (
     <svg
