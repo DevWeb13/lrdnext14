@@ -4,17 +4,14 @@
 
 import connect from '@/app/utils/connect-db';
 import { ObjectId } from 'mongodb';
-import { signOut } from '@/auth';
+import { auth, signOut } from '@/auth';
 import User from '@/models/User';
 
-export async function deleteUser(
-  prevState: string | undefined,
-  formData: FormData
-) {
+export async function deleteUser() {
   await connect();
 
-  // Récupérer l'id de l'utilisateur
-  const id = formData.get('id') as string;
+  const session = await auth();
+  const id = session?.user?.id;
 
   try {
     // Convertir la chaîne id en ObjectId
@@ -22,16 +19,14 @@ export async function deleteUser(
 
     // Supprimer l'utilisateur de la base de données
     await User.deleteOne({ _id: objectId });
-
-    // Déconnecter l'utilisateur
-    try {
-      await signOut({ redirectTo: '/' });
-    } catch (err) {
-      console.error('Error signing out user:', err);
-      return "Échec de la suppression de l'utilisateur";
-    }
   } catch (error) {
     console.error('Error deleting user:', error);
     return "Échec de la suppression de l'utilisateur";
   }
+
+  // Déconnecter l'utilisateur
+
+  await signOut({
+    redirectTo: '/',
+  });
 }

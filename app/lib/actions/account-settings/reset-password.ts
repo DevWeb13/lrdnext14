@@ -1,3 +1,5 @@
+// app/lib/actions/account-settings/reset-password.ts
+
 'use server';
 
 import connect from '@/app/utils/connect-db';
@@ -19,7 +21,7 @@ import { redirect } from 'next/navigation';
  */
 export async function resetPassword(
   prevState: FormErrorState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FormErrorState> {
   // Modification pour permettre un retour void
   try {
@@ -61,12 +63,12 @@ export async function resetPassword(
           resetPasswordToken: null,
           resetPasswordTokenExpiredAt: null,
         },
-      }
+      },
     );
   } catch (error) {
     console.error(
       'Erreur lors de la réinitialisation du mot de passe :',
-      error
+      error,
     );
     return {
       errors: {},

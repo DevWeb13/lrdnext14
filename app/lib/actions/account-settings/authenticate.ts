@@ -1,7 +1,11 @@
+// app/lib/actions/account-settings/authenticate.ts
+
 'use server';
 
 import { AuthError } from 'next-auth';
 import { signIn } from '@/auth';
+import { getStatus } from '../get/get-status';
+import { FormErrorState } from '@/types/form-error-state';
 
 /**
  * The function `authenticate` is an asynchronous function that takes in the previous state and form
@@ -17,19 +21,49 @@ import { signIn } from '@/auth';
  * @returns a string.
  */
 export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData
-) {
+  prevState: FormErrorState,
+  formData: FormData,
+): Promise<FormErrorState> {
+  const email = formData.get('email') as string;
   try {
+    const status = await getStatus(email);
+    console.log({ status });
+
+    if (typeof status === 'string') {
+      return {
+        message: status,
+      };
+    }
+
+    if (status === null) {
+      return {
+        message: "Ce compte n'existe pas. Veuillez créer un compte.",
+      };
+    }
+
+    if (typeof status === 'object' && status.status === 'pendingVerification') {
+      return {
+        errors: {
+          email: [email],
+        },
+        message:
+          "Votre compte n'est pas encore activé. Veuillez vérifier votre boîte de réception pour le lien d'activation.",
+      };
+    }
     await signIn('credentials', Object.fromEntries(formData));
   } catch (error) {
     if (error instanceof AuthError) {
       if (error.type === 'CredentialsSignin') {
-        return 'Identifiants incorrects.';
+        return {
+          message: 'Identifiants incorrects.',
+        };
       } else {
-        return 'Something went wrong.';
+        return {
+          message: 'Something went wrong.',
+        };
       }
     }
     throw error;
   }
+  return {};
 }

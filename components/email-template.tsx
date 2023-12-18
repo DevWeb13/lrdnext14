@@ -22,7 +22,7 @@ interface EmailTemplateProps {
   footerIntroText?: string;
 }
 
-const baseUrl = 'https://demo.react.email/';
+const baseUrl = 'https://lrdnext14.vercel.app/';
 
 export const EmailTemplate = ({
   userName = '',
@@ -39,18 +39,16 @@ export const EmailTemplate = ({
       <Body style={main}>
         <Container style={container}>
           <Img
-            src={`${baseUrl}/static/dropbox-logo.png`}
-            width='40'
-            height='33'
-            alt='Dropbox'
+            src={`${baseUrl}logoLRD.svg`}
+            width="50"
+            height="50"
+            alt="Dropbox"
           />
           <Section>
             <Text style={text}>Bonjour {userName},</Text>
             <Text style={text}>{sectionText}</Text>
 
-            <Button
-              style={button}
-              href={link}>
+            <Button style={button} href={link}>
               {buttonText}
             </Button>
             <Text style={text}>{footerIntroText}</Text>

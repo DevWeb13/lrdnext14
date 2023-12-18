@@ -1,56 +1,26 @@
+// app/ui/auth/resend-email-form.tsx
+
 import { resendVerificationEmail } from '@/app/lib/actions/signup/resend-verification-email';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { Button } from '@/app/ui/button';
 import { useFormState, useFormStatus } from 'react-dom';
 
-export default function ResendEmailForm({
-  id,
-  email,
-  newPassword,
-  name,
-}: {
-  readonly id: string;
-  readonly email: string;
-  readonly newPassword: string;
-  readonly name: string;
-}) {
+export default function ResendEmailForm({ email }: { readonly email: string }) {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(resendVerificationEmail, initialState);
   return (
     <>
-      <h1 className='text-2xl font-semibold text-center'>
-        Le lien a expiré, merci de recommencer la procédure.
-      </h1>
       <form action={dispatch}>
-        <input
-          type='hidden'
-          name='id'
-          value={id}
-        />
-        <input
-          type='hidden'
-          name='email'
-          value={email}
-        />
-        <input
-          type='hidden'
-          name='newPassword'
-          value={newPassword}
-        />
-        <input
-          type='hidden'
-          name='name'
-          value={name}
-        />
+        <input type="hidden" name="email" value={email} />
 
         <ResendEmailButton />
         <div
-          id='error'
-          aria-live='polite'
-          aria-atomic='true'
-          className='flex h-8 items-end space-x-1'>
+          id="error"
+          aria-live="polite"
+          aria-atomic="true"
+          className="flex h-8 items-end space-x-1"
+        >
           {state.message && (
-            <p className='mt-2 text-sm text-green-500'>{state.message}</p>
+            <p className="mt-2 text-sm text-green-500">{state.message}</p>
           )}
         </div>
       </form>
@@ -62,11 +32,12 @@ function ResendEmailButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button
-      className='mt-4 w-full'
-      aria-disabled={pending}>
-      Renvoyer un lien
-      <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
-    </Button>
+    <button
+      className="flex items-center gap-5 self-start rounded-lg  text-xs font-medium text-blue-400 transition-colors hover:text-blue-600 hover:underline md:text-xs"
+      aria-disabled={pending}
+    >
+      Renvoyer un Email avec un lien d&apos;activation de compte{' '}
+      <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+    </button>
   );
 }

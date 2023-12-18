@@ -6,14 +6,19 @@ import { Document, Model } from 'mongoose';
 
 export async function addEmailVerificationToken(
   id: string,
-  User: Model<Document>
+  User: Model<Document>,
 ) {
   const { emailVerificationToken, emailVerificationTokenExpiredAt } =
     generateEmailVerificationToken();
 
   await User.updateOne(
     { _id: new ObjectId(id) },
-    { $set: { emailVerificationToken, emailVerificationTokenExpiredAt } }
+    {
+      $set: {
+        emailVerificationToken,
+        emailVerificationTokenExpiredAt,
+      },
+    },
   );
 
   return { emailVerificationToken, emailVerificationTokenExpiredAt };

@@ -11,7 +11,6 @@ export async function sendVerificationEmail(user: {
   name: string;
   id: string;
   email: string;
-  hashedPassword: string;
   emailVerificationToken: string;
   emailVerificationTokenExpiredAt: Date;
 }): Promise<FormErrorState> {
@@ -26,7 +25,6 @@ export async function sendVerificationEmail(user: {
     name,
     id,
     email,
-    hashedPassword,
     emailVerificationToken,
     emailVerificationTokenExpiredAt,
   } = user;
@@ -34,13 +32,13 @@ export async function sendVerificationEmail(user: {
   const html = await renderAsync(
     EmailTemplate({
       userName: name,
-      link: `${URL}/auth/verify-email/${id}?token=${emailVerificationToken}&email=${email}&newPassword=${hashedPassword}&name=${name}&expires=${emailVerificationTokenExpiredAt}`,
+      link: `${URL}/auth/verify-email/${id}?token=${emailVerificationToken}&email=${email}&name=${name}&expires=${emailVerificationTokenExpiredAt}`,
       previewText: 'Confirmer votre adresse e-mail',
       sectionText:
         'Bienvenue sur LaReponseDev ! Nous sommes ravis de vous compter parmi nos membres. Veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous.',
       buttonText: 'Confirmer votre adresse e-mail',
       footerIntroText: 'Nous vous remercions de votre confiance.',
-    }) as React.ReactElement
+    }) as React.ReactElement,
   );
 
   try {

@@ -26,7 +26,4 @@ export type ResetPasswordAppUserInfo = Pick<
   'id' | 'resetPasswordToken' | 'resetPasswordTokenExpiredAt'
 >;
 
-export type EmailVerificationAppUserInfo = Pick<
-  AppUser,
-  'id' | 'emailVerificationToken' | 'emailVerificationTokenExpiredAt'
->;
+export type EmailVerificationAppUserInfo = Pick<AppUser, 'id' | 'name'>;

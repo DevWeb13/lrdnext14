@@ -1,3 +1,5 @@
+// app/lib/actions/get/get-email-valid-user-info.ts
+
 'use server';
 
 import connect from '@/app/utils/connect-db';
@@ -18,7 +20,7 @@ import { ObjectId } from 'mongodb';
  */
 export async function getEmailValidUserInfo(
   id: string,
-  token: string
+  token: string,
 ): Promise<string> {
   try {
     await connect();
@@ -30,7 +32,7 @@ export async function getEmailValidUserInfo(
     const user = await User.findOne({ _id: objectId });
     // Retourner les informations de l'utilisateur (ou null si non trouvé)
     console.log({ user });
-    if (!user || user.password !== null) {
+    if (!user || user.status === 'active') {
       return 'alreadyValid';
     }
 
@@ -52,7 +54,7 @@ export async function getEmailValidUserInfo(
           emailVerificationToken: null,
           emailVerificationTokenExpiredAt: null,
         },
-      }
+      },
     );
 
     return 'invalidToken';

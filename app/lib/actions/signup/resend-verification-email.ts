@@ -1,3 +1,5 @@
+// app/lib/actions/signup/resend-verification-email.ts
+
 'use server';
 
 import connect from '@/app/utils/connect-db';
@@ -6,27 +8,33 @@ import { redirect } from 'next/navigation';
 import { sendVerificationEmail } from './send-verification-email';
 import { addEmailVerificationToken } from './add-email-verification-token';
 import User from '@/models/User';
+import { getIdAndNameWithEmail } from '../get/get-id-and-name-with-email';
 
 export async function resendVerificationEmail(
   prevState: FormErrorState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FormErrorState> {
   const resendVerificationEmailData = {
-    id: formData.get('id')!.toString(),
     email: formData.get('email')!.toString(),
-    password: formData.get('newPassword')!.toString(),
-    name: formData.get('name')!.toString(),
   };
 
-  const {
-    id,
-    email,
-    name,
-    password: newPassword,
-  } = resendVerificationEmailData;
+  const { email } = resendVerificationEmailData;
 
   try {
     await connect();
+
+    const idAndName = await getIdAndNameWithEmail(email);
+
+    if (!idAndName) {
+      return {
+        errors: {
+          email: ['Cet e-mail n’est associé à aucun compte.'],
+        },
+        message: 'Veuillez vérifier vos saisies.',
+      };
+    }
+
+    const { id, name } = idAndName;
 
     const { emailVerificationToken, emailVerificationTokenExpiredAt } =
       await addEmailVerificationToken(id, User);
@@ -36,7 +44,6 @@ export async function resendVerificationEmail(
       name,
       id,
       email,
-      hashedPassword: newPassword,
       emailVerificationToken,
       emailVerificationTokenExpiredAt,
     });

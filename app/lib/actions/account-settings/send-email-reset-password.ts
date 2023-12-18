@@ -1,3 +1,5 @@
+// app/lib/actions/account-settings/send-email-reset-password.ts
+
 'use server';
 
 import { EmailResetPassword } from '@/schema/zod/user-form-schema';
@@ -12,9 +14,19 @@ import EmailTemplate from '@/components/email-template';
 
 const MODE = process.env.NODE_ENV;
 
+/**
+ * The function `sendEmailResetPassword` sends an email to the user with a reset password link, after
+ * validating the form data and checking if the user exists and is in the correct status.
+ * @param {FormErrorState} prevState - The `prevState` parameter is the previous state of the form
+ * errors. It is an object that contains the errors and the message from the previous form submission.
+ * @param {FormData} formData - The `formData` parameter is an object that contains the data submitted
+ * in the form. It is of type `FormData`, which is a built-in JavaScript class used to handle form
+ * data. In this case, it is used to retrieve the value of the email field from the form.
+ * @returns a Promise that resolves to a FormErrorState object.
+ */
 export async function sendEmailResetPassword(
   prevState: FormErrorState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FormErrorState> {
   try {
     // Valider les données du formulaire
@@ -35,20 +47,18 @@ export async function sendEmailResetPassword(
     const user = await User.findOne({ email });
     if (!user) {
       return {
-        errors: { email: ["Cet e-mail n'est pas associé à un compte."] },
-        message: 'Veuillez vérifier vos saisies.',
+        errors: {},
+        message: "Cet e-mail n'est pas associé à un compte.",
       };
     }
 
-    if (!user.password) {
+    if (user.status === 'pendingVerification') {
       return {
         errors: {
-          email: [
-            "Ce compte n'est pas validé, veuillez valider votre email pour pouvoir réinitialiser votre mot de passe.",
-          ],
+          email: [email],
         },
         message:
-          'Veuillez valider votre compte pour pouvoir réinitialiser votre mot de passe.',
+          "Votre compte n'est pas encore activé. Veuillez vérifier votre boîte de réception pour le lien d'activation.",
       };
     }
 
@@ -66,11 +76,11 @@ export async function sendEmailResetPassword(
         link: `${URL}/auth/reset-password/${user._id}?token=${resetPasswordToken}&email=${user.email}`,
         previewText: 'Réinitialiser votre mot de passe',
         sectionText:
-          "Quelqu&apos;un a récemment demandé un changement de mot de passe pour votre compte LaReponseDev. Si c'est votre cas, vous pouvez définir un nouveau mot de passe ici.",
+          "Quelqu'un a récemment demandé un changement de mot de passe pour votre compte LaReponseDev. Si c'est votre cas, vous pouvez définir un nouveau mot de passe ici.",
         buttonText: 'Réinitialiser votre mot de passe',
         footerIntroText:
           "Si vous ne souhaitez pas modifier votre mot de passe ou si vous ne l'avez pas demandé, ignorez et supprimez simplement ce message.",
-      }) as React.ReactElement
+      }) as React.ReactElement,
     );
 
     await resend.emails.send({
@@ -82,7 +92,7 @@ export async function sendEmailResetPassword(
   } catch (error) {
     console.error(
       "Erreur lors de l'envoi de l'email de réinitialisation :",
-      error
+      error,
     );
     return {
       errors: {},
@@ -90,5 +100,5 @@ export async function sendEmailResetPassword(
     };
   }
   // Pas d'erreur, redirection vers login
-  redirect('/auth/login');
+  redirect('/auth/checked-email-for-reset-password');
 }

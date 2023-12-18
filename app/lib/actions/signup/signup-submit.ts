@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { redirect } from 'next/navigation';
 
 import { SignUpFormSchema } from '@/schema/zod/user-form-schema';
-import { addEmailVerificationToken } from './add-email-verification-token';
+import { addPasswordAndEmailVerificationToken } from './add-password-and-email-verification-token';
 import connect from '@/app/utils/connect-db';
 import { sendVerificationEmail } from '@/app/lib/actions/signup/send-verification-email';
 
@@ -14,10 +14,11 @@ import User from '@/models/User';
 import type { AppUser, NewAppUser } from '@/types/app-user';
 import type { FormErrorState } from '@/types/form-error-state';
 import type { SignUpData } from '@/types/sign-up-data';
+import { generateEmailVerificationToken } from '@/app/utils/generate-email-verification-token';
 
 async function checkSignupFormData(
   signUpData: SignUpData,
-  existingUser: AppUser | null
+  existingUser: AppUser | null,
 ): Promise<FormErrorState> {
   // Valider les données du formulaire avec le schéma Zod étendu
   const validatedUser = SignUpFormSchema.safeParse(signUpData);
@@ -56,7 +57,7 @@ async function checkSignupFormData(
 
 export async function signupSubmit(
   prevState: FormErrorState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FormErrorState> {
   const signUpData = {
     name: formData.get('name')?.toString(),
@@ -73,12 +74,12 @@ export async function signupSubmit(
 
     const checkSignupFormDataState = await checkSignupFormData(
       signUpData,
-      existingUser
+      existingUser,
     );
     console.log({ checkSignupFormDataState });
 
     if (checkSignupFormDataState.message) {
-      return prevState;
+      return checkSignupFormDataState;
     }
 
     // Hasher le mot de passe
@@ -89,35 +90,40 @@ export async function signupSubmit(
       console.log('test');
       // ajouter le token de confirmation et la date d'expiration
       const { emailVerificationToken, emailVerificationTokenExpiredAt } =
-        await addEmailVerificationToken(existingUser._id.toString(), User);
+        await addPasswordAndEmailVerificationToken(
+          existingUser._id.toString(),
+          hashedPassword,
+          User,
+        );
 
-      // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
+      // envoie un mail de confirmation avec id, token, email, name,  et date d'expiration
       const sendVerificationEmailState = await sendVerificationEmail({
         name: name!,
         id: existingUser._id.toString(),
         email: email!,
-        hashedPassword,
         emailVerificationToken,
         emailVerificationTokenExpiredAt,
       });
 
       if (sendVerificationEmailState.message) {
-        return prevState;
+        return sendVerificationEmailState;
       }
     } else {
       // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
       console.log('test 2');
+      const { emailVerificationToken, emailVerificationTokenExpiredAt } =
+        generateEmailVerificationToken();
       const newUser: NewAppUser = new User({
         role: 'user',
         status: 'pendingVerification',
         name: name!,
         email: email!,
         image: null,
-        password: null,
+        password: hashedPassword,
         createdAt: new Date(),
         updatedAt: new Date(),
-        emailVerificationToken: null,
-        emailVerificationTokenExpiredAt: null,
+        emailVerificationToken,
+        emailVerificationTokenExpiredAt,
         resetPasswordToken: null,
         resetPasswordTokenExpiredAt: null,
       });
@@ -126,25 +132,18 @@ export async function signupSubmit(
 
       const createdUser = await User.create(newUser);
 
-      // ajouter le token de confirmation et la date d'expiration
-      const { emailVerificationToken, emailVerificationTokenExpiredAt } =
-        await addEmailVerificationToken(createdUser._id.toString(), User);
-
-      console.log({ emailVerificationToken, emailVerificationTokenExpiredAt });
-
-      // envoie un mail de confirmation avec id, token, email, name, hashedPassword, et date d'expiration
+      // envoie un mail de confirmation avec id, token, email, name,  et date d'expiration
       const sendVerificationEmailState = await sendVerificationEmail({
         name: name!,
         id: createdUser._id.toString(),
         email: email!,
-        hashedPassword,
         emailVerificationToken,
         emailVerificationTokenExpiredAt,
       });
       console.log({ sendVerificationEmailState });
 
       if (sendVerificationEmailState.message) {
-        return prevState;
+        return sendVerificationEmailState;
       }
     }
   } catch (error) {

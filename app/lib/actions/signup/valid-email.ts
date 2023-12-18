@@ -17,10 +17,9 @@ import { redirect } from 'next/navigation';
  */
 export async function validEmail(
   prevState: FormErrorState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FormErrorState> {
   const id = formData.get('id');
-  const password = formData.get('newPassword');
   const objectId = new ObjectId(id as string);
 
   // Mettre à jour l'utilisateur existant avec le nouveau mot de passe
@@ -31,12 +30,11 @@ export async function validEmail(
       { _id: objectId },
       {
         $set: {
-          password,
           emailVerificationToken: null,
           emailVerificationTokenExpiredAt: null,
           status: 'active',
         },
-      }
+      },
     );
 
     prevState.message = null;

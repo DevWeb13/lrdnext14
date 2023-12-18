@@ -39,6 +39,6 @@ export async function getStatusAndRoleUserInfo(id: string): Promise<{
     };
   } catch (error) {
     console.error('Failed to connect database ', error);
-    throw new Error('Failet to connect database.');
+    throw new Error('Failed to connect database.');
   }
 }
