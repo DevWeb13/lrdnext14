@@ -1,5 +1,5 @@
 import { validEmail } from '@/app/lib/actions/signup/valid-email';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 import { Button } from '../button';
 import {
   ArrowRightIcon,
@@ -37,8 +37,6 @@ export default function ValidEmailForm({ id }: { readonly id: string }) {
 }
 
 function ValidEmailButton() {
-  const { pending } = useFormStatus();
-
   return (
     <Button className="mt-4 w-full" aria-disabled={pending}>
       Cliquez pour valider votre compte{' '}

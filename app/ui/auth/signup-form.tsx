@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -161,10 +161,8 @@ export default function SignUpForm() {
 }
 
 function SignupButton() {
-  const { pending } = useFormStatus();
-
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
+    <Button className="mt-4 w-full">
       Créer un compte
       <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>

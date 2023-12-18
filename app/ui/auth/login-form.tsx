@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@/app/ui/button';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 import { authenticate } from '@/app/lib/actions/account-settings/authenticate';
 import Link from 'next/link';
 import ResendEmailForm from './resend-email-form';
@@ -102,10 +102,8 @@ export default function LoginForm() {
 }
 
 function LoginButton() {
-  const { pending } = useFormStatus();
-
   return (
-    <Button className="mt-4 w-full md:text-base" aria-disabled={pending}>
+    <Button className="mt-4 w-full md:text-base">
       Se connecter <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
   );

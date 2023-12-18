@@ -1,16 +1,10 @@
 // app/ui/auth/logout-form.tsx
 
-import { auth, signOut } from '@/auth';
+import { signOut } from '@/auth';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import { Button } from '../button';
-import { AppUser } from '@/types/app-user';
 
-export default async function LogoutForm() {
-  const session = await auth();
-
-  const user = session?.user as AppUser;
-
-  const { email } = user;
+export default async function LogoutForm({ email }: { email: string }) {
   return (
     <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
       <h1 className={`mb-3 text-2xl`}>

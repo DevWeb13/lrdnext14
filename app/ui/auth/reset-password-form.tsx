@@ -5,7 +5,7 @@ import {
   ExclamationCircleIcon,
   KeyIcon,
 } from '@heroicons/react/24/outline';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 import { Button } from '@/app/ui/button';
 import { resetPassword } from '@/app/lib/actions/account-settings/reset-password';
 
@@ -100,10 +100,8 @@ export default function ResetPasswordForm({ id }: { readonly id: string }) {
 }
 
 function ResetPasswordButton() {
-  const { pending } = useFormStatus();
-
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
+    <Button className="mt-4 w-full">
       Réinitialiser mon mot de passe{' '}
       <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>

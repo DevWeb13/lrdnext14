@@ -1,13 +1,14 @@
 // app/auth/logout/page.tsx
 
 import LogoutForm from '@/app/ui/auth/logout-form';
-import { Suspense } from 'react';
-import LogoutFormSkeleton from '@/app/ui/skeletons/auth/logout-form-skeleton';
+import { auth } from '@/auth';
+import { AppUser } from '@/types/app-user';
 
-export default function LogoutPage() {
-  return (
-    <Suspense fallback={<LogoutFormSkeleton />}>
-      <LogoutForm />
-    </Suspense>
-  );
+export default async function LogoutPage() {
+  const session = await auth();
+
+  const user = session?.user as AppUser;
+
+  const { email } = user;
+  return <LogoutForm email={email} />;
 }

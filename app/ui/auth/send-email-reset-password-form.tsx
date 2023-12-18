@@ -8,7 +8,7 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '../button';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 import { sendEmailResetPassword } from '@/app/lib/actions/account-settings/send-email-reset-password';
 import ResendEmailForm from './resend-email-form';
 
@@ -71,13 +71,8 @@ export default function SendEmailResetPassword() {
 }
 
 function ResetPasswordButton() {
-  const { pending } = useFormStatus();
   return (
-    <Button
-      className="mt-4 w-full md:text-base"
-      type="submit"
-      aria-disabled={pending}
-    >
+    <Button className="mt-4 w-full md:text-base" type="submit">
       Réinitialiser mon mot de passe{' '}
       <ArrowRightIcon className="ml-auto h-5 w-5 " />
     </Button>

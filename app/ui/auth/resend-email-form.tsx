@@ -2,7 +2,7 @@
 
 import { resendVerificationEmail } from '@/app/lib/actions/signup/resend-verification-email';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 
 export default function ResendEmailForm({ email }: { readonly email: string }) {
   const initialState = { message: null, errors: {} };
@@ -27,13 +27,8 @@ export default function ResendEmailForm({ email }: { readonly email: string }) {
 }
 
 function ResendEmailButton() {
-  const { pending } = useFormStatus();
-
   return (
-    <button
-      className="flex items-center gap-5 self-start rounded-lg  text-xs font-medium text-blue-400 transition-colors hover:text-blue-600 hover:underline md:text-xs"
-      aria-disabled={pending}
-    >
+    <button className="flex items-center gap-5 self-start rounded-lg  text-xs font-medium text-blue-400 transition-colors hover:text-blue-600 hover:underline md:text-xs">
       Renvoyer un Email avec un lien d&apos;activation de compte{' '}
       <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </button>
