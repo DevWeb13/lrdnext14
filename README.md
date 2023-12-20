@@ -1,24 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# LRDnext14
 
-First, run the development server:
+Authentication template with Next.js 14.
+
+
+
+## Tech Stack
+
+**Next.js 14**           
+**Next-Auth V5**                    
+**MongoDb**                    
+**Mongoose**             
+**TailwindCss**                
+**Resend**        
+**Zod**       
+**Vercel**
+
+## Features
+
+- Authentication with Auth.js V5 and server actions.
+- Authentication with credentials and Google.
+- Account creation.
+- Account verification by email
+- Change password by email.
+- Connection.
+- Disconnection.
+- Account deletion.
+- Intelligent User Account Management: Our application uses an advanced authentication method which guarantees the creation of only one account per email address. Whether you choose to log in with Google or through traditional credentials, our system recognizes your email address and automatically links your session to your existing account. This simplifies your user experience while maintaining the security and integrity of your personal data.
+- Error management and display.
+
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`MONGODB_URI`            
+`AUTH_SECRET`                  
+`AUTH_URL`                     
+`GOOGLE_CLIENT_ID`                       
+`GOOGLE_CLIENT_SECRET`                  
+`RESEND_API_KEY`
+## Run Locally
+
+Clone the project
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  git clone https://github.com/DevWeb13/lrdnext14.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+  cd lrdnext14
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run dev
+```
+
+**Clone Project Video Demo:**
+
+[![Clone project video demo](https://raw.githubusercontent.com/DevWeb13/lrdnext14/main/mq2.webp)](https://youtu.be/7uKiR6s3-Ao "Clone project")
 
 ## Learn More
 
